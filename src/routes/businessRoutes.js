@@ -1,0 +1,36 @@
+import express from "express";
+import { body } from "express-validator";
+import {
+  getBusiness,
+  updateBusiness,
+  createBusiness,
+} from "../controllers/businessControllers.js";
+
+import {
+  allowSellerOnly,
+  authenticateSeller,
+} from "../middlewares/authMiddlewares.js";
+
+const router = express.Router();
+
+router.post(
+  "/new",
+  [
+    authenticateSeller,
+    allowSellerOnly,
+    body("name").notEmpty().isString(),
+    body("description").notEmpty().isString(),
+    body("business_category_id").exists().notEmpty().isString(),
+  ],
+  createBusiness
+);
+
+router.put(
+  "/:business_id",
+  [authenticateSeller, allowSellerOnly],
+  updateBusiness
+);
+
+router.get("/:business_id", getBusiness);
+
+export default router;
